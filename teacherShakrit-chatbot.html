@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ครูชาคริต AI</title>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f5f5f5;
+        }
+        #chatbot {
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background: white;
+        }
+        #chat-header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        #chat-messages {
+            height: 300px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .user-message {
+            background: #e3f2fd;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        .bot-message {
+            background: #f1f1f1;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        #input-area {
+            padding: 10px;
+            background: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+        }
+        #user-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        #send-btn {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="chatbot">
+    <div id="chat-header">
+        ครูชาคริต AI Assistant
+    </div>
+    <div id="chat-messages"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="พิมพ์คำถามที่นี่นะครับนักเรียน...">
+        <button id="send-btn" onclick="sendMessage()">ส่ง</button>
+    </div>
+</div>
+
+<script>
+    // ฐานข้อมูลคำถาม-คำตอบ
+    const qaPairs = {
+        "สวัสดี": ["สวัสดีครับนักเรียน! มีอะไรให้ครูชาคริตช่วยไหมครับ?", "สวัสดีครับ ยินดีต้อนรับสู่ห้องเรียนครูชาคริต"],
+        "hello": ["Hello! How can I help you today?"],
+        "การบ้าน": ["อย่าลืมทำงานส่งนะครับ", "งานนี้ส่งผ่านระบบออนไลน์นะครับ"],
+        "ขอบคุณ": ["ยินดีช่วยเหลือครับ!", "ไม่เป็นไรครับ มีอะไรอีกไหมครับ?"],
+        "default": ["ขอโทษครับ ครุูชาคริตไม่เข้าใจคำถามนี้ ลองถามใหม่ได้ไหมครับ?"]
+    };
+
+    // เริ่มต้นแชท
+    window.onload = function() {
+        addBotMessage("สวัสดีนักเรียนทุกคน ยินดีต้อนรับสู่ห้องเรียนครูชาคริต มีอะไรจะถามครูครับ");
+    };
+
+    function sendMessage() {
+        const input = document.getElementById('user-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        addUserMessage(message);
+        input.value = '';
+        
+        // หาคำตอบหลังจาก delay
+        setTimeout(() => {
+            const response = getResponse(message);
+            addBotMessage(response);
+        }, 500);
+    }
+
+    function getResponse(message) {
+        const lowerMsg = message.toLowerCase();
+        
+        // หาคำตอบที่ตรงที่สุด
+        for (const [keyword, answers] of Object.entries(qaPairs)) {
+            if (lowerMsg.includes(keyword.toLowerCase())) {
+                return answers[Math.floor(Math.random() * answers.length)];
+            }
+        }
+        
+        // ถ้าไม่เจอคำตอบที่ตรง
+        return qaPairs.default[0];
+    }
+
+    function addUserMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message user-message';
+        msgDiv.innerHTML = `<strong>คุณ:</strong> ${text}`;
+        document.getElementById('chat-messages').appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    function addBotMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message bot-message';
+        msgDiv.innerHTML = `<strong>ครูชาคริต:</strong> ${text}`;
+        document.getElementById('chat-messages').appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        const chatMessages = document.getElementById('chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // เปิดใช้งานการกด Enter
+    document.getElementById('user-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+</script>
+
+</body>
+</html>
